@@ -19,20 +19,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine
 		MessageBox(NULL, L"»зменение значени€ параметра по умолчанию успешно изменено", L"»нформаци€", MB_OK);
 	}
 
-	time_t t = time(NULL);
-	char* tchar = ctime(&t);
-	LPSTR s = tchar;
+	SYSTEMTIME t;
+	GetLocalTime(&t);
+	LPWSTR s = calloc(512, sizeof(WCHAR));
+	swprintf(s, 512,  L"%d.%d.%d %d:%d:%d", t.wDay, t.wMonth, t.wYear, t.wHour, t.wMinute, t.wSecond);
 
-	if (RegSetValueExW(tmp, L"MyTextParam", NULL, REG_SZ, &s, 10) == ERROR_SUCCESS) //создание строкового параметра и присваивание значени€
+	if (RegSetValueExW(tmp, L"MyTextParam", NULL, REG_SZ, s, 512) == ERROR_SUCCESS) //создание строкового параметра и присваивание значени€
 	{
 		MessageBox(NULL, L"ѕараметр создан и ему присвоено значение", L"»нформаци€", MB_OK);
 	}
 
-	LPSTR DwValue = "";
+	LPWSTR DwValue = calloc(512,sizeof(WCHAR));
 	DWORD DataType = 0;
 	DWORD DataLen = 512;
 
-	if (RegGetValueW(hKey, L"Mykey", L"MyTextParam", RRF_RT_ANY, &DataType, &DwValue, &DataLen) == ERROR_SUCCESS) //вывод значение параметра
+	if (RegGetValueW(hKey, L"Mykey", L"MyTextParam", RRF_RT_ANY, &DataType, DwValue, &DataLen) == ERROR_SUCCESS) //вывод значение параметра
 	{
 		MessageBox(NULL, DwValue, L"«начение параметра", MB_OK);
 	}
